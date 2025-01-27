@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nice Movie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold mb-6 text-center">Nice Movie</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="movie-grid">
+            <!-- Movies will be displayed here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // API key and URL (replace with your key if you have one from RapidAPI or similar services)
+        const API_URL = 'https://imdb-api.com/en/API/Top250Movies/YOUR_API_KEY';
+
+        async function fetchMovies() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch movies');
+                }
+                const data = await response.json();
+                displayMovies(data.items || []);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('movie-grid').innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load movies. Please try again later.</p>';
+            }
+        }
+
+        function displayMovies(movies) {
+            const movieGrid = document.getElementById('movie-grid');
+            movieGrid.innerHTML = movies.map(movie => `
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                    <img src="${movie.image}" alt="${movie.title}" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h2 class="text-lg font-semibold">${movie.title}</h2>
+                        <p class="text-sm text-gray-400">${movie.year}</p>
+                        <p class="text-yellow-400 font-bold">⭐ ${movie.imDbRating}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Call fetchMovies on load
+        fetchMovies();
+    </script>
+</body>
+</html>
